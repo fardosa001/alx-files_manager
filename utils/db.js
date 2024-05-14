@@ -14,27 +14,19 @@ class DBClient {
     }).catch((err) => console.log(err.message));
   }
 
-  async connect() {
-    try {
-      await this.client.connect();
-      console.log('Connected to MongoDB');
-    } catch (error) {
-      console.error('Error connecting to MongoDB:', error);
-      throw error;
-    }
-  }
-
   async isAlive() {
     return this.connected;
   }
 
   async nbUsers() {
-    const usersCollection = this.client.db(this.database).collection('users');
+    await this.client.connect();
+    const usersCollection = await this.client.db(this.database).collection('users');
     return usersCollection.countDocuments();
   }
 
   async nbFiles() {
-    const filesCollection = this.client.db(this.database).collection('files');
+    await this.client.connect();
+    const filesCollection = await this.client.db(this.database).collection('files');
     return filesCollection.countDocuments();
   }
 }
