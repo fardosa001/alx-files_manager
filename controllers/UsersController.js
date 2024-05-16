@@ -18,22 +18,16 @@ class UsersController {
       return;
     }
 
-    const users = dbClient.db.collection('users');
-    users.findOne({ email }, (err, user) => {
-      if (user) {
-        response.status(400).json({ error: 'Already exist' });
-      } else {
-        const hashedPassword = sha1(password);
-        users.insertOne(
-          {
-            email,
-            password: hashedPassword,
-          },
-        ).then((result) => {
-          response.status(201).json({ id: result.insertedId, email });
-        }).catch((error) => console.log(error));
-      }
-    });
+    const userExist = dbClient.userExist(email);
+    if (userExist) {
+      res.status(400).json({ error: 'Already exist' });
+      res.end();
+      return;
+    }
+    const user = dbClient.createUser(email, password);
+    const id = `${user.insertedId}`;
+    res.status(201).json({ id, email });
+    res.end();
   }
 
   static async getMe(req, res) {

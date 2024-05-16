@@ -27,6 +27,30 @@ class DBClient {
     const filesCollection = this.client.db(this.database).collection('files');
     return filesCollection.countDocuments();
   }
+
+  async createUser(email, password) {
+    const hashedPwd = pwdHashed(password);
+    await this.client.connect();
+    const user = await this.client.db(this.database).collection('users').insertOne({ email, password: hashedPwd });
+    return user;
+  }
+
+  async getUser(email) {
+    await this.client.connect();
+    const user = await this.client.db(this.database).collection('users').find({ email }).toArray();
+    if (!user.length) {
+      return null;
+    }
+    return user[0];
+  }
+
+  async userExist(email) {
+    const user = await this.getUser(email);
+    if (user) {
+      return true;
+    }
+    return false;
+  }
 }
 
 const dbClient = new DBClient();
