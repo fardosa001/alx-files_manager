@@ -1,7 +1,7 @@
 import sha1 from 'sha1';
-import dbClient from '../utils/db';
 
 const { ObjectId } = require('mongodb');
+const dbClient = require('../utils/db');
 const RedisClient = require('../utils/redis');
 
 class UsersController {
